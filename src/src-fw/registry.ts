@@ -69,6 +69,8 @@ abstract class Doc {
     return this._parentClazz || undefined
   }
 
+  get descriptor () { return (this.constructor as any)['descriptor'] }
+
 }
 
 class AX extends Doc {
@@ -97,6 +99,7 @@ a1.pseudo = 'Simone'
 const a2 = Registry.newD('AS2', 'Auteur', 'roman') as Auteur_roman
 a2.pseudo = 'Zola'
 a2.best = 'La bête'
+const a2d = a2.descriptor
 
 const daz = Auteur_roman.descriptor
 const saz = Auteur_roman.subCl
