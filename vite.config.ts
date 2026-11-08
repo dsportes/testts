@@ -2,13 +2,60 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
+import { VitePWA } from 'vite-plugin-pwa'
+
+/* Ce plugin permet d'invoquer la page depuis un sous-folder
+et pas seulement depuis la racine du site:
+https://.../sousite/index.html
+Sans ce plugin il doit être invoqué par https://.../index.html
+*/
+const htmlPlugin = () => {
+  return {
+    name: 'html-transform',
+    transformIndexHtml(html: any) {
+      return html.replaceAll('href="/', 'href="./').replaceAll('content="/', 'content="./').replaceAll('src="/', 'src="./')
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    htmlPlugin(),
     vue(),
-    vueDevTools(),
+    VitePWA({
+      injectRegister: null,
+      strategies: 'injectManifest',
+      srcDir: 'src-pwa',
+      filename: 'my-sw.ts',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        sourcemap: true
+      },
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      devOptions: {
+        enabled: true
+      },
+      manifest: {
+        "name": "asocial 3",
+        "short_name": "asocial 3",
+        "description": "Tests divers vue pwa",
+        "theme_color": "#ffffff",
+        "icons": [
+          {
+            "src": "anonymous-black.png",
+            "sizes": "128x128",
+            "type": "image/png"
+          },
+          {
+            "src": "anonymous-white.png",
+            "sizes": "128x128",
+            "type": "image/png"
+          }
+        ]
+      }
+    })
   ],
   resolve: {
     alias: {
