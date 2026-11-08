@@ -4,27 +4,13 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 
-/* Ce plugin permet d'invoquer la page depuis un sous-folder
-et pas seulement depuis la racine du site:
-https://.../sousite/index.html
-Sans ce plugin il doit être invoqué par https://.../index.html
-*/
-const htmlPlugin = () => {
-  return {
-    name: 'html-transform',
-    transformIndexHtml(html: any) {
-      return html.replaceAll('href="/', 'href="./').replaceAll('content="/', 'content="./').replaceAll('src="/', 'src="./')
-    },
-  }
-}
-
 // https://vite.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [
-    htmlPlugin(),
     vue(),
     VitePWA({
-      injectRegister: null,
+      injectRegister: false,
       strategies: 'injectManifest',
       srcDir: 'src-pwa',
       filename: 'my-sw.ts',

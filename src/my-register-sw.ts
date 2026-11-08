@@ -1,6 +1,5 @@
 import { register } from 'register-service-worker'
 
-
 export let myRegistration = null
 export let _onAppUpdate = null
 export function setOnAppUpdate(f: any) {
@@ -15,11 +14,17 @@ navigator.serviceWorker.addEventListener('message', event => {
   console.log(`Reçu dans App envoyé par SW: ${msg.type} ${msg.payload}`);
 })
 
-register(
-  // import.meta.env.MODE === 'production' ? '/sw.js' : '/dev-sw.js?dev-sw',
-  './my-sw.js', 
-  {
+/*
+En dev, vite génère un dv-sw.js?dev-sw en guise de service-worker script.
+Mais celui-ci contient des 'import': il faut forcer les options d'enregistrement avec { type:'module' }
+qui sont à indiquer dans 'registrationOptions.
+*/
+const sw = import.meta.env.MODE === 'production' ? './my-sw.js' : '/dev-sw.js?dev-sw'
 
+register(
+  sw, 
+  {
+    registrationOptions: { type: 'module' },
     registered (registration) {
       // @ts-expect-error
       myRegistration = registration
